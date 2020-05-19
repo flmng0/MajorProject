@@ -76,7 +76,6 @@ namespace Galc {
                 //
                 // throw new ArgumentOutOfRangeException("factor", factor, "Scale factor must be greater than 0");
 
-                Console.WriteLine("Early return Viewport::Scale");
                 return;
             }
 

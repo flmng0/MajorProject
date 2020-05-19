@@ -27,22 +27,14 @@ namespace Galc {
         public static double StepX = 1.0f;
 
         /// <summary>
-        /// Line width for minor grid line subdivisions.
-        /// </summary>
-        public static GridLineProperties SubGridLine = new GridLineProperties(Color.FromArgb(150, Color.Black), 1.0f);
-
-        /// <summary>
         /// Line width for the second thickest line style, used for minor grid lines.
         /// </summary>
-        public static GridLineProperties MinorGridLine = new GridLineProperties(Color.FromArgb(195, Color.Black), 2f);
+        public static GridLineProperties MinorGridLine = new GridLineProperties(Color.FromArgb(140, Color.Black), 1f);
 
         /// <summary>
         /// Line width for major grid lines.
         /// </summary>
-        public static GridLineProperties MajorGridLine = new GridLineProperties(Color.FromArgb(240, Color.Black), 3f);
-
-        public static float SubdivisionLevel = 1.0f;
-        public static PointF GridDivisions = new Point(5, 5);
+        public static GridLineProperties MajorGridLine = new GridLineProperties(Color.FromArgb(240, Color.Black), 2f);
 
         /// <summary>
         /// The step between each drawn grid line.

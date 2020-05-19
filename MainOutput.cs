@@ -36,18 +36,8 @@ namespace Galc {
         private void DrawGridLines(Graphics g) {
             var steps = Settings.GridStep;
             var size = ClientSize;
-            var subLevel = (int)Math.Max(Math.Floor(Settings.SubdivisionLevel), 1.0f);
-            var subdivisions = Settings.GridDivisions;
 
-            var minorStep = new PointF(
-                steps.X * subLevel,
-                steps.Y * subLevel
-            );
-
-            var subStep = new PointF(
-                minorStep.X / subdivisions.X,
-                minorStep.Y / subdivisions.Y
-            );
+            var minorStep = new PointF(steps.X, steps.Y);
 
             using (var pen = new Pen(Brushes.Black)) {
                 // Vertical grid lines.
@@ -59,17 +49,6 @@ namespace Galc {
 
                     var isMajorGridLine = Math.Abs(viewX) <= double.Epsilon;
                     var lineProperties = isMajorGridLine ? Settings.MajorGridLine : Settings.MinorGridLine;
-
-                    for (int subLineIndex = 1; subLineIndex < subdivisions.X; subLineIndex++) {
-                        var subViewX = viewX + subLineIndex * subStep.X;
-
-                        pen.Width = Settings.SubGridLine.Width;
-                        pen.Color = Settings.SubGridLine.Color;
-
-                        var screenSubX = _viewport.ViewToScreenX((float)subViewX, size.Width);
-
-                        g.DrawLine(pen, screenSubX, 0, screenSubX, size.Height);
-                    }
 
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
@@ -88,17 +67,6 @@ namespace Galc {
 
                     var isMajorGridLine = Math.Abs(viewY) <= double.Epsilon;
                     var lineProperties = isMajorGridLine ? Settings.MajorGridLine : Settings.MinorGridLine;
-
-                    for (int subLineIndex = 1; subLineIndex < subdivisions.Y; subLineIndex++) {
-                        var subViewY = viewY + subLineIndex * subStep.Y;
-
-                        pen.Width = Settings.SubGridLine.Width;
-                        pen.Color = Settings.SubGridLine.Color;
-
-                        var screenSubY = _viewport.ViewToScreenY((float)subViewY, size.Height);
-
-                        g.DrawLine(pen, 0, screenSubY, size.Width, screenSubY);
-                    }
 
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
@@ -126,11 +94,6 @@ namespace Galc {
             float delta = -(float)e.Delta / (float)SystemInformation.MouseWheelScrollDelta;
 
             var scaleFactor = (float)Math.Pow(1.25, delta);
-
-            if ((float)(ClientSize.Width * Settings.SubdivisionLevel) / _viewport.Width < 50.0f) {
-                Settings.SubdivisionLevel += 1;
-            }
-
             _viewport.Scale(scaleFactor);
 
             Refresh();
