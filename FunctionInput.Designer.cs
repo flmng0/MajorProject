@@ -42,15 +42,16 @@
             this.label4 = new System.Windows.Forms.Label();
             this.LineWidthSelector = new System.Windows.Forms.NumericUpDown();
             this.ErrorToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.LineWidthSelector)).BeginInit();
             this.SuspendLayout();
             // 
             // FunctionInputBox
             // 
             this.FunctionInputBox.Font = new System.Drawing.Font("Arial", 8.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FunctionInputBox.Location = new System.Drawing.Point(74, 13);
+            this.FunctionInputBox.Location = new System.Drawing.Point(124, 13);
             this.FunctionInputBox.Name = "FunctionInputBox";
-            this.FunctionInputBox.Size = new System.Drawing.Size(261, 21);
+            this.FunctionInputBox.Size = new System.Drawing.Size(211, 21);
             this.FunctionInputBox.TabIndex = 0;
             this.FunctionInputBox.TextChanged += new System.EventHandler(this.FunctionInputBox_TextChanged);
             // 
@@ -84,7 +85,7 @@
             // LineStyleSelector
             // 
             this.LineStyleSelector.FormattingEnabled = true;
-            this.LineStyleSelector.Location = new System.Drawing.Point(75, 66);
+            this.LineStyleSelector.Location = new System.Drawing.Point(76, 66);
             this.LineStyleSelector.Name = "LineStyleSelector";
             this.LineStyleSelector.Size = new System.Drawing.Size(259, 21);
             this.LineStyleSelector.TabIndex = 4;
@@ -93,7 +94,7 @@
             // ColorPreviewBox
             // 
             this.ColorPreviewBox.Enabled = false;
-            this.ColorPreviewBox.Location = new System.Drawing.Point(230, 40);
+            this.ColorPreviewBox.Location = new System.Drawing.Point(231, 40);
             this.ColorPreviewBox.Name = "ColorPreviewBox";
             this.ColorPreviewBox.ReadOnly = true;
             this.ColorPreviewBox.Size = new System.Drawing.Size(104, 20);
@@ -101,7 +102,7 @@
             // 
             // ColorSelectButton
             // 
-            this.ColorSelectButton.Location = new System.Drawing.Point(74, 40);
+            this.ColorSelectButton.Location = new System.Drawing.Point(75, 40);
             this.ColorSelectButton.Name = "ColorSelectButton";
             this.ColorSelectButton.Size = new System.Drawing.Size(150, 20);
             this.ColorSelectButton.TabIndex = 6;
@@ -115,7 +116,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Location = new System.Drawing.Point(178, 93);
+            this.ResetButton.Location = new System.Drawing.Point(179, 93);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
             this.ResetButton.TabIndex = 8;
@@ -125,7 +126,7 @@
             // 
             // DeleteButton
             // 
-            this.DeleteButton.Location = new System.Drawing.Point(259, 93);
+            this.DeleteButton.Location = new System.Drawing.Point(260, 93);
             this.DeleteButton.Name = "DeleteButton";
             this.DeleteButton.Size = new System.Drawing.Size(75, 23);
             this.DeleteButton.TabIndex = 9;
@@ -144,7 +145,7 @@
             // 
             // LineWidthSelector
             // 
-            this.LineWidthSelector.Location = new System.Drawing.Point(74, 94);
+            this.LineWidthSelector.Location = new System.Drawing.Point(75, 94);
             this.LineWidthSelector.Maximum = new decimal(new int[] {
             5,
             0,
@@ -170,11 +171,22 @@
             this.ErrorToolTip.ForeColor = System.Drawing.Color.Crimson;
             this.ErrorToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Cambria", 9.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(81, 17);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(37, 15);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "f(x) =";
+            // 
             // FunctionInputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(346, 128);
+            this.ClientSize = new System.Drawing.Size(344, 128);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.LineWidthSelector);
             this.Controls.Add(this.DeleteButton);
             this.Controls.Add(this.ResetButton);
@@ -211,5 +223,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown LineWidthSelector;
         private System.Windows.Forms.ToolTip ErrorToolTip;
+        private System.Windows.Forms.Label label5;
     }
 }

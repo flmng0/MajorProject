@@ -8,7 +8,7 @@ namespace Galc {
 
 
     public partial class FunctionInputForm : Form {
-        public const string DefaultFunctionString = "f(x) = cos(x)";
+        public const string DefaultFunctionString = "cos(x)";
         private readonly int _functionID;
 
         public FunctionInputForm() {
@@ -35,15 +35,11 @@ namespace Galc {
         }
 
         private void FunctionInputBox_TextChanged(object sender, EventArgs e) {
-            var function = new mXparserFunction(FunctionInputBox.Text);
+            var function = new mXparserFunction("f(x)=" + FunctionInputBox.Text);
 
-            if (!function.checkSyntax()) {
-                var error = function.getErrorMessage();
-                ErrorToolTip.SetToolTip(FunctionInputBox, error);
-                ErrorToolTip.Show(error, this);
-            }
-            else {
+            if (function.checkSyntax()) {
                 ErrorToolTip.Hide(this);
+                ErrorToolTip.SetToolTip(this, "");
                 Settings.Functions[_functionID].InnerFunction = function;
 
                 Settings.MainForm.Refresh();

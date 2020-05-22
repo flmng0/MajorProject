@@ -87,6 +87,11 @@ namespace Galc {
                 var points = new List<PointF>();
 
                 var inner = function.InnerFunction;
+                PointF? previous = null;
+
+                var pen = new Pen(function.Color);
+                pen.DashStyle = function.Style;
+                pen.Width = function.Width;
 
                 for (int i = 0; i <= Settings.Tolerance; ++i) {
                     // Stop floating point errors when looping with floats, even if just a little.
@@ -101,13 +106,16 @@ namespace Galc {
                     var viewPoint = new PointF(xInput, result);
                     var screenPoint = _viewport.ViewToScreen(viewPoint, ClientSize);
 
-                    
-                    points.Add(screenPoint);
-                }
+                    if (previous.HasValue) {
+                        if (previous.Value.Y - screenPoint.Y > Settings.MaxYDelta) {
+                            g.DrawCurve(pen, points.ToArray());
+                            points.Clear();
+                        }
+                    }
 
-                var pen = new Pen(function.Color);
-                pen.DashStyle = function.Style;
-                pen.Width = function.Width;
+                    points.Add(screenPoint);
+                    previous = screenPoint;
+                }
 
                 if (points.Count > 0)
                     g.DrawCurve(pen, points.ToArray());
