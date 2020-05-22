@@ -74,11 +74,11 @@ namespace Galc {
 
         private void ResetButton_Click(object sender, EventArgs e) {
             FunctionInputBox.Text = DefaultFunctionString;
-            var innerFunction = new mXparserFunction(FunctionInputBox.Text);
+            var innerFunction = new mXparserFunction("f(x)=" + FunctionInputBox.Text);
 
             var function = Settings.Functions[_functionID];
             function.InnerFunction = innerFunction;
-            function.Color = Color.Black;
+            function.Color = Color.Blue;
             function.Style = DashStyle.Solid;
             function.Width = 1.0f;
 

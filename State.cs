@@ -65,8 +65,6 @@ namespace Galc {
         /// </summary>
         public static int Tolerance = 1024;
 
-        public static float MaxYDelta = 4096f;
-
         /// <summary>
         /// Line width for the second thickest line style, used for minor grid lines.
         /// </summary>

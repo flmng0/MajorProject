@@ -145,6 +145,12 @@
             // 
             // LineWidthSelector
             // 
+            this.LineWidthSelector.DecimalPlaces = 1;
+            this.LineWidthSelector.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
             this.LineWidthSelector.Location = new System.Drawing.Point(75, 94);
             this.LineWidthSelector.Maximum = new decimal(new int[] {
             5,

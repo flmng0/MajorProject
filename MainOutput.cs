@@ -107,8 +107,9 @@ namespace Galc {
                     var screenPoint = _viewport.ViewToScreen(viewPoint, ClientSize);
 
                     if (previous.HasValue) {
-                        if (previous.Value.Y - screenPoint.Y > Settings.MaxYDelta) {
-                            g.DrawCurve(pen, points.ToArray());
+                        if (Math.Abs(previous.Value.Y - screenPoint.Y) > ClientSize.Height) {
+                            if (points.Count > 1)
+                                g.DrawCurve(pen, points.ToArray());
                             points.Clear();
                         }
                     }
@@ -117,7 +118,7 @@ namespace Galc {
                     previous = screenPoint;
                 }
 
-                if (points.Count > 0)
+                if (points.Count > 1)
                     g.DrawCurve(pen, points.ToArray());
             }
         }
