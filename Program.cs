@@ -14,7 +14,11 @@ namespace Galc {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainOutputForm());
+
+            var main = new MainOutputForm();
+            Settings.MainForm = main;
+
+            Application.Run(main);
         }
     }
 

@@ -7,10 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using org.mariuszgromada.math.mxparser;
 
 namespace Galc {
     public partial class MainOutputForm : Form {
         private Viewport _viewport;
+        // Disposed of in the MainOutpu.Designer.cs file.
         private BufferedGraphics _bufferedGraphics;
 
         public MainOutputForm() {
@@ -77,11 +79,47 @@ namespace Galc {
             }
         }
 
+        private void DrawFunctions(Graphics g, Dictionary<int, Function> functions) {
+            var stepX = _viewport.Width / Settings.Tolerance;
+
+            foreach (var item in functions) {
+                var function = item.Value;
+                var points = new List<PointF>();
+
+                var inner = function.InnerFunction;
+
+                for (int i = 0; i <= Settings.Tolerance; ++i) {
+                    // Stop floating point errors when looping with floats, even if just a little.
+                    var xInput = _viewport.MinX + i * stepX;
+
+                    inner.setArgumentValue(0, xInput);
+                    var result = -(float)inner.calculate();
+
+                    if (float.IsNaN(result))
+                        continue;
+
+                    var viewPoint = new PointF(xInput, result);
+                    var screenPoint = _viewport.ViewToScreen(viewPoint, ClientSize);
+
+                    
+                    points.Add(screenPoint);
+                }
+
+                var pen = new Pen(function.Color);
+                pen.DashStyle = function.Style;
+                pen.Width = function.Width;
+
+                if (points.Count > 0)
+                    g.DrawCurve(pen, points.ToArray());
+            }
+        }
+
         private void MainOutputForm_Paint(object sender, PaintEventArgs e) {
             var g = _bufferedGraphics.Graphics;
             g.Clear(Color.White);
 
             DrawGridLines(g);
+            DrawFunctions(g, Settings.Functions);
 
             _bufferedGraphics.Render(e.Graphics);
         }
@@ -100,6 +138,9 @@ namespace Galc {
         }
 
         private void MainOutputForm_ClientSizeChanged(object sender, EventArgs e) {
+            if (ClientSize.Width == 0 && ClientSize.Height == 0)
+                return;
+
             // !!! Is this reliable? Does it get changed by the system during runtime? !!!
             var previousSize = BufferedGraphicsManager.Current.MaximumBuffer;
             var newSize = ClientSize;
@@ -137,11 +178,20 @@ namespace Galc {
             }
 
             previousMouseViewPos = _viewport.ScreenToView(e.Location, size);
-
         }
 
         private void MainOutputForm_MouseEnter(object sender, EventArgs e) {
-            Focus();
+            if (ContainsFocus)
+                Focus();
+        }
+
+        private void AddFunctionButton_Click(object sender, EventArgs e) {
+            var inputForm = new FunctionInputForm();
+            inputForm.Show();
+        }
+
+        public void UpdateFunctions() {
+            Refresh();
         }
     }
 }

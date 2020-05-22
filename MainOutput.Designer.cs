@@ -12,6 +12,8 @@
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();
+
+                _bufferedGraphics.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -35,6 +37,7 @@
             this.AddFunctionButton.TabIndex = 0;
             this.AddFunctionButton.Text = "Add Function";
             this.AddFunctionButton.UseVisualStyleBackColor = true;
+            this.AddFunctionButton.Click += new System.EventHandler(this.AddFunctionButton_Click);
             // 
             // MainOutputForm
             // 
