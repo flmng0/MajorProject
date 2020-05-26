@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using org.mariuszgromada.math.mxparser;
 
 namespace Galc {
@@ -24,6 +27,88 @@ namespace Galc {
             _viewport = new Viewport(aspectRatio);
 
             UpdateBufferedGraphics();
+            InitializeMenuItems();
+        }
+
+        private void InitializeMenuItems() {
+            var mainMenu = new MainMenu();
+
+            var fileMenu = new MenuItem();
+            fileMenu.Text = "File";
+
+            var openItem = new MenuItem();
+            openItem.Text = "Open...";
+            openItem.Shortcut = Shortcut.CtrlO;
+            openItem.Click += (sender, e) => {
+                var openDialog = new OpenFileDialog();
+
+                openDialog.Title = "Open functions...";
+                openDialog.Filter = "Galc Settings and State File|*.galc";
+                
+                if (openDialog.ShowDialog() == DialogResult.OK) {
+                    LoadFrom(openDialog.FileName);
+                }
+            };
+
+            var saveItem = new MenuItem();
+            saveItem.Text = "Save";
+            saveItem.Enabled = !string.IsNullOrEmpty(State.SavePath);
+            saveItem.Shortcut = Shortcut.CtrlS;
+            saveItem.Click += (sender, e) => SaveTo(State.SavePath);
+
+            var saveAsItem = new MenuItem();
+            saveAsItem.Text = "Save as...";
+            saveAsItem.Shortcut = Shortcut.CtrlShiftS;
+            saveAsItem.Click += (sender, e) => {
+                var saveDialog = new SaveFileDialog();
+
+                saveDialog.Title = "Save functions...";
+                saveDialog.DefaultExt = "galc";
+                saveDialog.Filter = "Galc Settings and State File|*.galc";
+
+                if (saveDialog.ShowDialog() == DialogResult.OK) {
+                    SaveTo(saveDialog.FileName);
+                }
+            };
+
+            fileMenu.MenuItems.Add(openItem);
+            fileMenu.MenuItems.Add(saveItem);
+            fileMenu.MenuItems.Add(saveAsItem);
+
+            mainMenu.MenuItems.Add(fileMenu);
+
+            Menu = mainMenu;
+        }
+
+        private void SaveTo(string filePath) {
+            var fs = new FileStream(filePath, FileMode.OpenOrCreate);
+            var formatter = new BinaryFormatter();
+
+            try {
+                formatter.Serialize(fs, State.Settings);
+            } catch (SerializationException e) {
+                Console.WriteLine("Failed to serialize data: " + e.Message);
+            } finally {
+                fs.Close();
+            }
+        }
+
+        private void LoadFrom(string filePath) {
+            var fs = new FileStream(filePath, FileMode.Open);
+            var formatter = new BinaryFormatter();
+
+            try {
+                State.Settings = (Settings)formatter.Deserialize(fs);
+
+                foreach (var function in State.Settings.Functions) {
+                    var inputForm = new FunctionInputForm(function.Key);
+                    inputForm.Show();
+                }
+            } catch (SerializationException e) {
+                Console.WriteLine("Failed to deserialize data: " + e.Message);
+            } finally {
+                fs.Close();
+            }
         }
 
         private void UpdateBufferedGraphics() {
@@ -36,7 +121,7 @@ namespace Galc {
         }
 
         private void DrawGridLines(Graphics g) {
-            var steps = Settings.GridStep;
+            var steps = State.Settings.GridStep;
             var size = ClientSize;
 
             var minorStep = new PointF(steps.X, steps.Y);
@@ -50,7 +135,7 @@ namespace Galc {
                     var viewX = startX + lineIndex * minorStep.X;
 
                     var isMajorGridLine = Math.Abs(viewX) <= double.Epsilon;
-                    var lineProperties = isMajorGridLine ? Settings.MajorGridLine : Settings.MinorGridLine;
+                    var lineProperties = isMajorGridLine ? State.Settings.MajorGridLine : State.Settings.MinorGridLine;
 
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
@@ -68,7 +153,7 @@ namespace Galc {
                     var viewY = startY + lineIndex * minorStep.Y;
 
                     var isMajorGridLine = Math.Abs(viewY) <= double.Epsilon;
-                    var lineProperties = isMajorGridLine ? Settings.MajorGridLine : Settings.MinorGridLine;
+                    var lineProperties = isMajorGridLine ? State.Settings.MajorGridLine : State.Settings.MinorGridLine;
 
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
@@ -80,25 +165,23 @@ namespace Galc {
         }
 
         private void DrawFunctions(Graphics g, Dictionary<int, Function> functions) {
-            var stepX = _viewport.Width / Settings.Tolerance;
+            var stepX = _viewport.Width / State.Tolerance;
 
             foreach (var item in functions) {
                 var function = item.Value;
                 var points = new List<PointF>();
 
-                var inner = function.InnerFunction;
                 PointF? previous = null;
 
                 var pen = new Pen(function.Color);
                 pen.DashStyle = function.Style;
                 pen.Width = function.Width;
 
-                for (int i = 0; i <= Settings.Tolerance; ++i) {
+                for (int i = 0; i <= State.Tolerance; ++i) {
                     // Stop floating point errors when looping with floats, even if just a little.
                     var xInput = _viewport.MinX + i * stepX;
 
-                    inner.setArgumentValue(0, xInput);
-                    var result = -(float)inner.calculate();
+                    var result = -(float)function.Calculate(xInput);
 
                     if (float.IsNaN(result))
                         continue;
@@ -128,7 +211,7 @@ namespace Galc {
             g.Clear(Color.White);
 
             DrawGridLines(g);
-            DrawFunctions(g, Settings.Functions);
+            DrawFunctions(g, State.Settings.Functions);
 
             _bufferedGraphics.Render(e.Graphics);
         }

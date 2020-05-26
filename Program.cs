@@ -16,7 +16,7 @@ namespace Galc {
             Application.SetCompatibleTextRenderingDefault(false);
 
             var main = new MainOutputForm();
-            Settings.MainForm = main;
+            State.MainForm = main;
 
             Application.Run(main);
         }

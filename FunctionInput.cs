@@ -6,66 +6,68 @@ using System.Windows.Forms;
 namespace Galc {
     using mXparserFunction = org.mariuszgromada.math.mxparser.Function;
 
-
     public partial class FunctionInputForm : Form {
         public const string DefaultFunctionString = "cos(x)";
         private readonly int _functionID;
 
-        public FunctionInputForm() {
+        public FunctionInputForm(int? ID = null) {
             InitializeComponent();
-
-            _functionID = Settings.NextID++;
-        }
-
-        private void FunctionInputForm_Load(object sender, EventArgs e) {
-            mXparserFunction innerFunction = new mXparserFunction(DefaultFunctionString);
-            var function = new Function(innerFunction, Color.Blue);
-
-            Settings.Functions.Add(_functionID, function);
-
-            FunctionInputBox.Text = DefaultFunctionString;
-
+            
             LineStyleSelector.DropDownStyle = ComboBoxStyle.DropDownList;
-            foreach (var style in Settings.DashStyleNames) {
+            foreach (var style in State.DashStyleNames) {
                 LineStyleSelector.Items.Add(style);
             }
-            LineStyleSelector.SelectedIndex = 0;
 
-            ColorPreviewBox.BackColor = function.Color;
+            if (ID.HasValue) {
+                _functionID = ID.Value;
+
+                var function = State.Settings.Functions[_functionID];
+
+                FunctionInputBox.Text = function.FunctionDefinition;
+                LineStyleSelector.SelectedIndex = (int)function.Style;
+                ColorPreviewBox.BackColor = function.Color;
+                LineWidthSelector.Value = (decimal)function.Width;
+            }
+            else {
+                _functionID = State.Settings.NextID++;
+
+                var function = new Function(DefaultFunctionString, Color.Blue);
+                State.Settings.Functions.Add(_functionID, function);
+
+                FunctionInputBox.Text = DefaultFunctionString;
+                LineStyleSelector.SelectedIndex = 0;
+                ColorPreviewBox.BackColor = function.Color;
+            }
         }
 
         private void FunctionInputBox_TextChanged(object sender, EventArgs e) {
-            var function = new mXparserFunction("f(x)=" + FunctionInputBox.Text);
+            var function = State.Settings.Functions[_functionID];
 
-            if (function.checkSyntax()) {
-                ErrorToolTip.Hide(this);
-                ErrorToolTip.SetToolTip(this, "");
-                Settings.Functions[_functionID].InnerFunction = function;
-
-                Settings.MainForm.Refresh();
+            if (function.Redefine(FunctionInputBox.Text)) {
+                State.MainForm.Refresh();
             }
         }
 
         private void ColorSelectButton_Click(object sender, EventArgs e) {
             if (ColorPicker.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                 ColorPreviewBox.BackColor = ColorPicker.Color;
-                Settings.Functions[_functionID].Color = ColorPicker.Color;
+                State.Settings.Functions[_functionID].Color = ColorPicker.Color;
 
-                Settings.MainForm.Refresh();
+                State.MainForm.Refresh();
             }
         }
 
         private void LineStyleSelector_SelectedIndexChanged(object sender, EventArgs e) {
             var lineStyle = (DashStyle)LineStyleSelector.SelectedIndex;
-            Settings.Functions[_functionID].Style = lineStyle;
+            State.Settings.Functions[_functionID].Style = lineStyle;
 
-            Settings.MainForm.Refresh();
+            State.MainForm.Refresh();
         }
 
         private void LineWidthSelector_ValueChanged(object sender, EventArgs e) {
-            Settings.Functions[_functionID].Width = (float)LineWidthSelector.Value;
+            State.Settings.Functions[_functionID].Width = (float)LineWidthSelector.Value;
 
-            Settings.MainForm.Refresh();
+            State.MainForm.Refresh();
         }
 
         private void DeleteButton_Click(object sender, EventArgs e) {
@@ -76,8 +78,8 @@ namespace Galc {
             FunctionInputBox.Text = DefaultFunctionString;
             var innerFunction = new mXparserFunction("f(x)=" + FunctionInputBox.Text);
 
-            var function = Settings.Functions[_functionID];
-            function.InnerFunction = innerFunction;
+            var function = State.Settings.Functions[_functionID];
+            function.Redefine(FunctionInputBox.Text);
             function.Color = Color.Blue;
             function.Style = DashStyle.Solid;
             function.Width = 1.0f;
@@ -87,13 +89,13 @@ namespace Galc {
 
             ColorPreviewBox.BackColor = function.Color;
 
-            Settings.MainForm.Refresh();
+            State.MainForm.Refresh();
         }
 
         private void FunctionInputForm_FormClosed(object sender, FormClosedEventArgs e) {
-            Settings.Functions.Remove(_functionID);
+            State.Settings.Functions.Remove(_functionID);
 
-            Settings.MainForm.Refresh();
+            State.MainForm.Refresh();
         }
     }
 

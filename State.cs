@@ -5,6 +5,9 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 // This file really needs to be renamed to "Shared" or something similar.
 //
@@ -14,6 +17,7 @@ using System.Threading.Tasks;
 namespace Galc {
     using mXparserFunction = org.mariuszgromada.math.mxparser.Function;
 
+    [Serializable]
     public struct GridLineProperties {
         public Color Color;
         public float Width;
@@ -24,24 +28,52 @@ namespace Galc {
         }
     }
 
+    [Serializable]
     public class Function {
-        public mXparserFunction InnerFunction;
+        [NonSerialized]
+        private mXparserFunction InnerFunction;
+        public string FunctionDefinition;
         public Color Color;
         public DashStyle Style;
         public float Width;
 
-        public Function(mXparserFunction inner, Color color, DashStyle style = DashStyle.Solid, float width = 1.0f) {
-            InnerFunction = inner;
+        public Function(string definition, Color color, DashStyle style = DashStyle.Solid, float width = 1.0f) {
+            FunctionDefinition = "f(x)=" + definition;
+            InnerFunction = new mXparserFunction(FunctionDefinition);
             Color = color;
             Style = style;
             Width = width;
         }
+
+        [OnDeserialized]
+        internal void OnDeserialized(StreamingContext context) {
+            InnerFunction = new mXparserFunction("f(x)=" + FunctionDefinition);
+        }
+
+        public bool Redefine(string definition) {
+            InnerFunction = new mXparserFunction("f(x)=" + definition);
+
+            if (InnerFunction.checkSyntax()) {
+                FunctionDefinition = definition;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public double Calculate(double x) {
+            InnerFunction.setArgumentValue(0, x);
+            return InnerFunction.calculate();
+        }
     }
 
     /// <summary>
-    /// Global settings for the calculator.
+    /// Global state and constants.
     /// </summary>
-    public static class Settings {
+    /// 
+    /// Any non user-visible data is put here, along with constants.
+    public static class State {
         /// <summary>
         /// The main output form. This is set in the entry point of Program.cs
         /// </summary>
@@ -61,34 +93,53 @@ namespace Galc {
         };
 
         /// <summary>
+        /// The save path that is stored when settings are loaded.
+        /// </summary>
+        public static string SavePath = null;
+
+        /// <summary>
         /// Amount of points to draw for each function.
         /// </summary>
-        public static int Tolerance = 1024;
+        public static readonly int Tolerance = 1024;
+
+        public static Settings Settings = new Settings();
+    }
+
+    /// <summary>
+    /// Global settings for the calculator.
+    /// </summary>
+    /// 
+    /// Global state that is visible and modifiable by the end user.
+    [Serializable]
+    public class Settings {
 
         /// <summary>
         /// Line width for the second thickest line style, used for minor grid lines.
         /// </summary>
-        public static GridLineProperties MinorGridLine = new GridLineProperties(Color.FromArgb(140, Color.Black), 1f);
+        public GridLineProperties MinorGridLine = new GridLineProperties(Color.FromArgb(140, Color.Black), 1f);
 
         /// <summary>
         /// Line width for major grid lines.
         /// </summary>
-        public static GridLineProperties MajorGridLine = new GridLineProperties(Color.FromArgb(240, Color.Black), 2f);
+        public GridLineProperties MajorGridLine = new GridLineProperties(Color.FromArgb(240, Color.Black), 2f);
 
         /// <summary>
         /// The step between each drawn grid line.
         /// </summary>
-        public static PointF GridStep = new PointF(1.0f, 1.0f);
+        public PointF GridStep = new PointF(1.0f, 1.0f);
 
         /// <summary>
         /// List of functions for the application.
         /// </summary>
-        public static Dictionary<int, Function> Functions = new Dictionary<int, Function>();
+        /// 
+        /// Whilst this is not a state by the lamen definition, it is user-modifiable.
+        /// Also, it's included in the data that is serialized when saving.
+        public Dictionary<int, Function> Functions = new Dictionary<int, Function>();
 
         /// <summary>
         /// The next available ID for a function. Used to store the key to access functions
         /// in the Functions dictionary.
         /// </summary>
-        public static int NextID = 0;
+        public int NextID = 0;
     }
 }

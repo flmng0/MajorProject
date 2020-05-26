@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.FunctionInputBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -41,7 +40,6 @@
             this.DeleteButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.LineWidthSelector = new System.Windows.Forms.NumericUpDown();
-            this.ErrorToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.LineWidthSelector)).BeginInit();
             this.SuspendLayout();
@@ -172,11 +170,6 @@
             0});
             this.LineWidthSelector.ValueChanged += new System.EventHandler(this.LineWidthSelector_ValueChanged);
             // 
-            // ErrorToolTip
-            // 
-            this.ErrorToolTip.ForeColor = System.Drawing.Color.Crimson;
-            this.ErrorToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -207,7 +200,6 @@
             this.Name = "FunctionInputForm";
             this.Text = "Galc - Function";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FunctionInputForm_FormClosed);
-            this.Load += new System.EventHandler(this.FunctionInputForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.LineWidthSelector)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -228,7 +220,6 @@
         private System.Windows.Forms.Button DeleteButton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown LineWidthSelector;
-        private System.Windows.Forms.ToolTip ErrorToolTip;
         private System.Windows.Forms.Label label5;
     }
 }
