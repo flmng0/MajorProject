@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -35,6 +36,7 @@ namespace Galc {
 
             var fileMenu = new MenuItem();
             fileMenu.Text = "File";
+            fileMenu.Name = "File";
 
             var openItem = new MenuItem();
             openItem.Text = "Open...";
@@ -52,6 +54,7 @@ namespace Galc {
 
             var saveItem = new MenuItem();
             saveItem.Text = "Save";
+            saveItem.Name = "Save";
             saveItem.Enabled = !string.IsNullOrEmpty(State.SavePath);
             saveItem.Shortcut = Shortcut.CtrlS;
             saveItem.Click += (sender, e) => SaveTo(State.SavePath);
@@ -84,16 +87,30 @@ namespace Galc {
             var fs = new FileStream(filePath, FileMode.OpenOrCreate);
             var formatter = new BinaryFormatter();
 
+            var successful = true;
+
             try {
                 formatter.Serialize(fs, State.Settings);
             } catch (SerializationException e) {
+                // TODO: Make this an error message popup.
                 Console.WriteLine("Failed to serialize data: " + e.Message);
+
+                successful = false;
             } finally {
                 fs.Close();
             }
+
+            if (successful) {
+                State.SavePath = filePath;
+            }
+            Menu.MenuItems["File"].MenuItems["Save"].Enabled = !string.IsNullOrEmpty(State.SavePath);
         }
 
         private void LoadFrom(string filePath) {
+            foreach (var form in OwnedForms) {
+                form.Close();
+            }
+
             var fs = new FileStream(filePath, FileMode.Open);
             var formatter = new BinaryFormatter();
 
@@ -103,6 +120,7 @@ namespace Galc {
                 foreach (var function in State.Settings.Functions) {
                     var inputForm = new FunctionInputForm(function.Key);
                     inputForm.Show();
+                    AddOwnedForm(inputForm);
                 }
             } catch (SerializationException e) {
                 Console.WriteLine("Failed to deserialize data: " + e.Message);
@@ -116,7 +134,7 @@ namespace Galc {
             context.MaximumBuffer = ClientSize;
 
             _bufferedGraphics = context.Allocate(CreateGraphics(), DisplayRectangle);
-            _bufferedGraphics.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            _bufferedGraphics.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             _bufferedGraphics.Graphics.Clear(Color.White);
         }
 
@@ -280,6 +298,8 @@ namespace Galc {
         private void AddFunctionButton_Click(object sender, EventArgs e) {
             var inputForm = new FunctionInputForm();
             inputForm.Show();
+
+            AddOwnedForm(inputForm);
         }
 
         public void UpdateFunctions() {
