@@ -56,12 +56,6 @@
     <Compile Include="FunctionInput.Designer.cs">
       <DependentUpon>FunctionInput.cs</DependentUpon>
     </Compile>
-    <Compile Include="Login.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Login.Designer.cs">
-      <DependentUpon>Login.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainOutput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,9 +68,6 @@
     <Compile Include="Viewport.cs" />
     <EmbeddedResource Include="FunctionInput.resx">
       <DependentUpon>FunctionInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Login.resx">
-      <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainOutput.resx">
       <DependentUpon>MainOutput.cs</DependentUpon>

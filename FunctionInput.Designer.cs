@@ -197,6 +197,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.FunctionInputBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "FunctionInputForm";
             this.Text = "Galc - Function";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FunctionInputForm_FormClosed);

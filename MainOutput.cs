@@ -46,7 +46,7 @@ namespace Galc {
 
                 openDialog.Title = "Open functions...";
                 openDialog.Filter = "Galc Settings and State File|*.galc";
-                
+
                 if (openDialog.ShowDialog() == DialogResult.OK) {
                     LoadFrom(openDialog.FileName);
                 }
@@ -83,50 +83,72 @@ namespace Galc {
             Menu = mainMenu;
         }
 
+        private void TryEnableQuickSave() {
+            var fileMenu = Menu.MenuItems["File"];
+            var saveButton = fileMenu.MenuItems["Save"];
+
+            saveButton.Enabled = !string.IsNullOrEmpty(State.SavePath);
+        }
+
         private void SaveTo(string filePath) {
-            var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-            var formatter = new BinaryFormatter();
+            var retry = false;
 
-            var successful = true;
+            do {
+                var fs = new FileStream(filePath, FileMode.OpenOrCreate);
+                var formatter = new BinaryFormatter();
 
-            try {
-                formatter.Serialize(fs, State.Settings);
-            } catch (SerializationException e) {
-                // TODO: Make this an error message popup.
-                Console.WriteLine("Failed to serialize data: " + e.Message);
+                try {
+                    formatter.Serialize(fs, State.Settings);
+                    State.SavePath = filePath;
+                }
+                catch (SerializationException e) {
+                    var result = MessageBox.Show(e.Message, "Failed to save file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
 
-                successful = false;
-            } finally {
-                fs.Close();
-            }
+                    retry = result == DialogResult.Retry;
+                }
+                finally {
+                    fs.Close();
+                }
+            } while (retry);
 
-            if (successful) {
-                State.SavePath = filePath;
-            }
-            Menu.MenuItems["File"].MenuItems["Save"].Enabled = !string.IsNullOrEmpty(State.SavePath);
+            TryEnableQuickSave();
         }
 
         private void LoadFrom(string filePath) {
-            foreach (var form in OwnedForms) {
-                form.Close();
-            }
+            var retry = false;
 
-            var fs = new FileStream(filePath, FileMode.Open);
-            var formatter = new BinaryFormatter();
+            do {
+                var fs = new FileStream(filePath, FileMode.Open);
+                var formatter = new BinaryFormatter();
 
-            try {
-                State.Settings = (Settings)formatter.Deserialize(fs);
+                try {
+                    // By putting the deserialization earlier than the closing of the forms,
+                    // they will only close when the file is successfully deserialized.
+                    var settings = (Settings)formatter.Deserialize(fs);
+                    foreach (var form in OwnedForms) {
+                        form.Close();
+                    }
+                    State.Settings = settings;
 
-                foreach (var function in State.Settings.Functions) {
-                    var inputForm = new FunctionInputForm(function.Key);
-                    inputForm.Show();
-                    AddOwnedForm(inputForm);
+                    State.SavePath = filePath;
+
+                    foreach (var function in State.Settings.Functions) {
+                        var inputForm = new FunctionInputForm(function.Key);
+                        inputForm.Show();
+                        AddOwnedForm(inputForm);
+                    }
                 }
-            } catch (SerializationException e) {
-                Console.WriteLine("Failed to deserialize data: " + e.Message);
-            } finally {
-                fs.Close();
-            }
+                catch (SerializationException e) {
+                    var result = MessageBox.Show(e.Message, "Failed to open file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+
+                    retry = result == DialogResult.Retry;
+                }
+                finally {
+                    fs.Close();
+                }
+            } while (retry);
+
+            TryEnableQuickSave();
         }
 
         private void UpdateBufferedGraphics() {
