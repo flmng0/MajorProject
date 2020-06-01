@@ -74,9 +74,32 @@ namespace Galc {
                 }
             };
 
-            fileMenu.MenuItems.Add(openItem);
-            fileMenu.MenuItems.Add(saveItem);
-            fileMenu.MenuItems.Add(saveAsItem);
+            var preferencesItem = new MenuItem();
+            preferencesItem.Text = "Preferences";
+            preferencesItem.Click += (sender, e) => {
+                var preferencesForm = new PreferencesForm();
+                preferencesForm.Show();
+            };
+
+            var exitItem = new MenuItem();
+            exitItem.Text = "Exit";
+            exitItem.Click += (sender, e) => Application.Exit();
+
+            var separator = new MenuItem("-");
+
+            fileMenu.MenuItems.AddRange(new MenuItem[] {
+                openItem,
+                saveItem,
+                saveAsItem,
+
+                separator.CloneMenu(),
+
+                preferencesItem,
+
+                separator.CloneMenu(),
+
+                exitItem
+            });
 
             mainMenu.MenuItems.Add(fileMenu);
 
