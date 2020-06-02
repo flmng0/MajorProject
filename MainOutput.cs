@@ -113,24 +113,30 @@ namespace Galc {
             saveButton.Enabled = !string.IsNullOrEmpty(State.SavePath);
         }
 
+        private DialogResult ErrorBox(string message, string title) {
+            return MessageBox.Show(message, title, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+        }
+
         private void SaveTo(string filePath) {
             var retry = false;
 
             do {
-                var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-                var formatter = new BinaryFormatter();
+                retry = false;
+                FileStream fs = null;
 
                 try {
+                    fs = new FileStream(filePath, FileMode.Create);
+
+                    var formatter = new BinaryFormatter();
                     formatter.Serialize(fs, State.Settings);
+
                     State.SavePath = filePath;
                 }
-                catch (SerializationException e) {
-                    var result = MessageBox.Show(e.Message, "Failed to save file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-
-                    retry = result == DialogResult.Retry;
+                catch (Exception e) {
+                    retry = ErrorBox(e.Message, "Failed to save file") == DialogResult.Retry;
                 }
                 finally {
-                    fs.Close();
+                    if (fs != null) fs.Close();
                 }
             } while (retry);
 
@@ -141,10 +147,13 @@ namespace Galc {
             var retry = false;
 
             do {
-                var fs = new FileStream(filePath, FileMode.Open);
-                var formatter = new BinaryFormatter();
+                retry = false;
+                FileStream fs = null;
 
                 try {
+                    fs = new FileStream(filePath, FileMode.Open);
+                    var formatter = new BinaryFormatter();
+
                     // By putting the deserialization earlier than the closing of the forms,
                     // they will only close when the file is successfully deserialized.
                     var settings = (Settings)formatter.Deserialize(fs);
@@ -161,13 +170,11 @@ namespace Galc {
                         AddOwnedForm(inputForm);
                     }
                 }
-                catch (SerializationException e) {
-                    var result = MessageBox.Show(e.Message, "Failed to open file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-
-                    retry = result == DialogResult.Retry;
+                catch (Exception e) {
+                    retry = ErrorBox(e.Message, "Failed to save file") == DialogResult.Retry;
                 }
                 finally {
-                    fs.Close();
+                    if (fs != null) fs.Close();
                 }
             } while (retry);
 
