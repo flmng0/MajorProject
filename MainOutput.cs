@@ -235,7 +235,7 @@ namespace Galc {
         }
 
         private void DrawFunctions(Graphics g, Dictionary<int, Function> functions) {
-            var stepX = _viewport.Width / State.Tolerance;
+            var stepX = _viewport.Width / ClientSize.Width;
 
             foreach (var item in functions) {
                 var function = item.Value;
@@ -247,7 +247,7 @@ namespace Galc {
                 pen.DashStyle = function.Style;
                 pen.Width = function.Width;
 
-                for (int i = 0; i <= State.Tolerance; ++i) {
+                for (int i = 0; i <= ClientSize.Width; ++i) {
                     // Stop floating point errors when looping with floats, even if just a little.
                     var xInput = _viewport.MinX + i * stepX;
 

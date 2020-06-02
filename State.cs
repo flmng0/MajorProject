@@ -98,10 +98,8 @@ namespace Galc {
         public static string SavePath = null;
 
         /// <summary>
-        /// Amount of points to draw for each function.
+        /// Settings that the user can manipulate in any way.
         /// </summary>
-        public static readonly int Tolerance = 1024;
-
         public static Settings Settings = new Settings();
     }
 
