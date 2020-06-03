@@ -122,6 +122,11 @@ namespace Galc {
         public GridLineProperties MajorGridLine = new GridLineProperties(Color.FromArgb(240, Color.Black), 2f);
 
         /// <summary>
+        /// Viewport state. Basically the zoom and position.
+        /// </summary>
+        public Viewport Viewport;
+
+        /// <summary>
         /// The step between each drawn grid line.
         /// </summary>
         public PointF GridStep = new PointF(1.0f, 1.0f);

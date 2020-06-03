@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Galc {
-    class Viewport {
+    [Serializable]
+    public class Viewport {
         public float MinX { get; set; }
         public float MaxX { get; set; }
 

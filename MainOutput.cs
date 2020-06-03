@@ -15,7 +15,6 @@ using org.mariuszgromada.math.mxparser;
 
 namespace Galc {
     public partial class MainOutputForm : Form {
-        private Viewport _viewport;
         // Disposed of in the MainOutpu.Designer.cs file.
         private BufferedGraphics _bufferedGraphics;
 
@@ -25,7 +24,7 @@ namespace Galc {
             var size = ClientSize;
             var aspectRatio = (float)size.Width / (float)size.Height;
 
-            _viewport = new Viewport(aspectRatio);
+            State.Settings.Viewport = new Viewport(aspectRatio);
 
             UpdateBufferedGraphics();
             InitializeMenuItems();
@@ -198,8 +197,8 @@ namespace Galc {
 
             using (var pen = new Pen(Brushes.Black)) {
                 // Vertical grid lines.
-                var startX = Math.Floor(_viewport.MinX / minorStep.X) * minorStep.X;
-                var lineCountX = Math.Ceiling(_viewport.Width / minorStep.X) + 1.0f;
+                var startX = Math.Floor(State.Settings.Viewport.MinX / minorStep.X) * minorStep.X;
+                var lineCountX = Math.Ceiling(State.Settings.Viewport.Width / minorStep.X) + 1.0f;
 
                 for (var lineIndex = 0; lineIndex < lineCountX; lineIndex++) {
                     var viewX = startX + lineIndex * minorStep.X;
@@ -210,14 +209,14 @@ namespace Galc {
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
 
-                    var screenX = _viewport.ViewToScreenX((float)viewX, size.Width);
+                    var screenX = State.Settings.Viewport.ViewToScreenX((float)viewX, size.Width);
                     g.DrawLine(pen, screenX, 0, screenX, size.Height);
                 }
 
 
                 // Horizontal grid lines.
-                var startY = Math.Floor(_viewport.MinY / minorStep.Y) * minorStep.Y;
-                var lineCountY = Math.Ceiling(_viewport.Height / minorStep.Y) + 1.0f;
+                var startY = Math.Floor(State.Settings.Viewport.MinY / minorStep.Y) * minorStep.Y;
+                var lineCountY = Math.Ceiling(State.Settings.Viewport.Height / minorStep.Y) + 1.0f;
 
                 for (var lineIndex = 0; lineIndex < lineCountY; lineIndex++) {
                     var viewY = startY + lineIndex * minorStep.Y;
@@ -228,14 +227,14 @@ namespace Galc {
                     pen.Width = lineProperties.Width;
                     pen.Color = lineProperties.Color;
 
-                    var screenY = _viewport.ViewToScreenY((float)viewY, size.Height);
+                    var screenY = State.Settings.Viewport.ViewToScreenY((float)viewY, size.Height);
                     g.DrawLine(pen, 0, screenY, size.Width, screenY);
                 }
             }
         }
 
         private void DrawFunctions(Graphics g, Dictionary<int, Function> functions) {
-            var stepX = _viewport.Width / ClientSize.Width;
+            var stepX = State.Settings.Viewport.Width / ClientSize.Width;
 
             foreach (var item in functions) {
                 var function = item.Value;
@@ -249,7 +248,7 @@ namespace Galc {
 
                 for (int i = 0; i <= ClientSize.Width; ++i) {
                     // Stop floating point errors when looping with floats, even if just a little.
-                    var xInput = _viewport.MinX + i * stepX;
+                    var xInput = State.Settings.Viewport.MinX + i * stepX;
 
                     var result = -(float)function.Calculate(xInput);
 
@@ -257,7 +256,7 @@ namespace Galc {
                         continue;
 
                     var viewPoint = new PointF(xInput, result);
-                    var screenPoint = _viewport.ViewToScreen(viewPoint, ClientSize);
+                    var screenPoint = State.Settings.Viewport.ViewToScreen(viewPoint, ClientSize);
 
                     if (previous.HasValue) {
                         if (Math.Abs(previous.Value.Y - screenPoint.Y) > ClientSize.Height) {
@@ -294,7 +293,7 @@ namespace Galc {
             float delta = -(float)e.Delta / (float)SystemInformation.MouseWheelScrollDelta;
 
             var scaleFactor = (float)Math.Pow(1.25, delta);
-            _viewport.Scale(scaleFactor);
+            State.Settings.Viewport.Scale(scaleFactor);
 
             Refresh();
         }
@@ -307,10 +306,10 @@ namespace Galc {
             var previousSize = BufferedGraphicsManager.Current.MaximumBuffer;
             var newSize = ClientSize;
 
-            var viewSize = _viewport.ScreenToView(new PointF(newSize.Width, newSize.Height), previousSize);
+            var viewSize = State.Settings.Viewport.ScreenToView(new PointF(newSize.Width, newSize.Height), previousSize);
 
-            _viewport.MaxX = viewSize.X;
-            _viewport.MaxY = viewSize.Y;
+            State.Settings.Viewport.MaxX = viewSize.X;
+            State.Settings.Viewport.MaxY = viewSize.Y;
 
             UpdateBufferedGraphics();
 
@@ -324,14 +323,14 @@ namespace Galc {
             if (e.Button == MouseButtons.Left) {
                 if (previousMouseViewPos.HasValue) {
                     var previous = previousMouseViewPos.Value;
-                    var viewMousePos = _viewport.ScreenToView(e.Location, size);
+                    var viewMousePos = State.Settings.Viewport.ScreenToView(e.Location, size);
 
                     var delta = new PointF(
                         previous.X - viewMousePos.X,
                         previous.Y - viewMousePos.Y
                     );
 
-                    _viewport.Translate(delta);
+                    State.Settings.Viewport.Translate(delta);
 
                     // Refresh is used rather than invalidate so that the buttons
                     // overlayed on the form are also redrawn.
@@ -339,7 +338,7 @@ namespace Galc {
                 }
             }
 
-            previousMouseViewPos = _viewport.ScreenToView(e.Location, size);
+            previousMouseViewPos = State.Settings.Viewport.ScreenToView(e.Location, size);
         }
 
         private void MainOutputForm_MouseEnter(object sender, EventArgs e) {
