@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Galc {
 
@@ -15,10 +14,21 @@ namespace Galc {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var main = new MainOutputForm();
-            State.MainForm = main;
+            //var main = new MainOutputForm();
+            //State.MainForm = main;
 
-            Application.Run(main);
+            //Application.Run(main);
+            Application.Run(new ProjectSelectForm());
+
+            if (State.MainForm == null) {
+                State.MainForm = new MainOutputForm();
+
+                if (State.SavePath != null && File.Exists(State.SavePath)) {
+                    State.MainForm.LoadFrom(State.SavePath);
+                }
+
+                Application.Run(State.MainForm);
+            }
         }
     }
 

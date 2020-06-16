@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -144,5 +141,9 @@ namespace Galc {
         /// in the Functions dictionary.
         /// </summary>
         public int NextID = 0;
+
+        public static Settings LoadFrom(FileInfo path) {
+            return new Settings();
+        }
     }
 }

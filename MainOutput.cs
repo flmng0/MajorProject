@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.Serialization;
@@ -15,7 +10,7 @@ using org.mariuszgromada.math.mxparser;
 
 namespace Galc {
     public partial class MainOutputForm : Form {
-        // Disposed of in the MainOutpu.Designer.cs file.
+        // Disposed of in the MainOutput.Designer.cs file.
         private BufferedGraphics _bufferedGraphics;
 
         public MainOutputForm() {
@@ -91,11 +86,11 @@ namespace Galc {
                 saveItem,
                 saveAsItem,
 
-                separator.CloneMenu(),
+                separator.CloneMenu(), // ---------
 
                 preferencesItem,
 
-                separator.CloneMenu(),
+                separator.CloneMenu(), // ---------
 
                 exitItem
             });
@@ -142,7 +137,7 @@ namespace Galc {
             TryEnableQuickSave();
         }
 
-        private void LoadFrom(string filePath) {
+        public void LoadFrom(string filePath) {
             var retry = false;
 
             do {
@@ -211,8 +206,9 @@ namespace Galc {
 
                     var screenX = State.Settings.Viewport.ViewToScreenX((float)viewX, size.Width);
                     g.DrawLine(pen, screenX, 0, screenX, size.Height);
-                }
 
+                    // While doing the vertical grid lines, 
+                }
 
                 // Horizontal grid lines.
                 var startY = Math.Floor(State.Settings.Viewport.MinY / minorStep.Y) * minorStep.Y;

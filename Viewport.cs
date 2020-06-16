@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Galc {
     [Serializable]
@@ -56,6 +52,8 @@ namespace Galc {
         }
 
         public float ViewToScreenX(float xCoord, int screenWidth) {
+            if (MinX < 0 && -float.Epsilon * 8.0f < MinX)
+                Console.WriteLine("Small");
             return screenWidth * (xCoord - MinX) / Width;
         }
         public float ViewToScreenY(float yCoord, int screenHeight) {
@@ -80,8 +78,14 @@ namespace Galc {
                 return;
             }
 
-            Width *= factor;
-            Height *= factor;
+            var newWidth = Width * factor;
+            var newHeight = Height * factor;
+            var sizeEpsilon = 1.0f / 1000000.0f;
+
+            if (newWidth > sizeEpsilon && newHeight > sizeEpsilon) {
+                Width *= factor;
+                Height *= factor;
+            }
         }
 
         public void Translate(PointF delta) {
