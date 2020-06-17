@@ -206,8 +206,6 @@ namespace Galc {
 
                     var screenX = State.Settings.Viewport.ViewToScreenX((float)viewX, size.Width);
                     g.DrawLine(pen, screenX, 0, screenX, size.Height);
-
-                    // While doing the vertical grid lines, 
                 }
 
                 // Horizontal grid lines.

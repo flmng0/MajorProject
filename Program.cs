@@ -14,10 +14,6 @@ namespace Galc {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //var main = new MainOutputForm();
-            //State.MainForm = main;
-
-            //Application.Run(main);
             Application.Run(new ProjectSelectForm());
 
             if (State.MainForm == null) {
@@ -26,9 +22,9 @@ namespace Galc {
                 if (State.SavePath != null && File.Exists(State.SavePath)) {
                     State.MainForm.LoadFrom(State.SavePath);
                 }
-
-                Application.Run(State.MainForm);
             }
+
+            Application.Run(State.MainForm);
         }
     }
 
