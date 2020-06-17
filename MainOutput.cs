@@ -59,6 +59,9 @@ namespace Galc {
             saveAsItem.Click += (sender, e) => {
                 var saveDialog = new SaveFileDialog();
 
+                if (State.SavePath != null) {
+                    saveDialog.InitialDirectory = Path.GetDirectoryName(State.SavePath);
+                }
                 saveDialog.Title = "Save functions...";
                 saveDialog.DefaultExt = "galc";
                 saveDialog.Filter = "Galc Settings and State File|*.galc";
