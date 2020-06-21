@@ -98,6 +98,8 @@ namespace Galc {
         /// Settings that the user can manipulate in any way.
         /// </summary>
         public static Settings Settings = new Settings();
+
+        public static bool ShouldRun = false;
     }
 
     /// <summary>

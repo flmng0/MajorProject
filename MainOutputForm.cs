@@ -114,8 +114,8 @@ namespace Galc {
             return MessageBox.Show(message, title, MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
         }
 
-        private void SaveTo(string filePath) {
-            var retry = false;
+        public void SaveTo(string filePath) {
+            bool retry;
 
             do {
                 retry = false;
@@ -168,7 +168,7 @@ namespace Galc {
                     }
                 }
                 catch (Exception e) {
-                    retry = ErrorBox(e.Message, "Failed to save file") == DialogResult.Retry;
+                    retry = ErrorBox(e.Message, "Failed to load file") == DialogResult.Retry;
                 }
                 finally {
                     if (fs != null) fs.Close();

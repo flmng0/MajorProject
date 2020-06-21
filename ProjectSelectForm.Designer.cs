@@ -100,7 +100,7 @@
             this.ScratchCheck.UseVisualStyleBackColor = true;
             this.ScratchCheck.CheckedChanged += new System.EventHandler(this.ScratchCheck_CheckedChanged);
             // 
-            // LoginForm
+            // ProjectSelectForm
             // 
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -116,7 +116,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "LoginForm";
+            this.Name = "ProjectSelectForm";
             this.ShowIcon = false;
             this.Text = "Galc - Project Select";
             this.ResumeLayout(false);

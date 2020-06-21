@@ -28,6 +28,15 @@ namespace Galc {
             return galcdata;
         }
 
+        private string GetSketchSavePath() {
+            var projectsRootPath = GetProjectsDataPath();
+            var projectPath = projectsRootPath + @"\" + ProjectCombo.Text;
+
+            var savePath = projectPath + @"\" + SketchCombo.Text + ".galc";
+
+            return savePath;
+        }
+
         // Load existing projects and sketches.
         private void LoadProjects() {
             var dirProjects = new DirectoryInfo(GetProjectsDataPath());
@@ -52,7 +61,7 @@ namespace Galc {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("HELLO!" + e.Message);
             }
                            
         }
@@ -102,29 +111,22 @@ namespace Galc {
                         State.SavePath = project[SketchCombo.SelectedIndex].savePath;
                     }
                     else {
-                        var projectsRootPath = GetProjectsDataPath();
-                        var projectPath = projectsRootPath + @"\" + ProjectCombo.Text;
-
-                        var savePathStr = projectPath + @"\" + SketchCombo.Text + ".galc";
-
-                        State.SavePath = savePathStr;
+                        var savePath = GetSketchSavePath();
+                        State.SavePath = savePath;
                     }
                 }
                 else {
-                    var projectsRootPath = GetProjectsDataPath();
-                    var projectPath = projectsRootPath + ProjectCombo.Text;
-
-                    var savePathStr = projectPath + @"\" + SketchCombo.Text + ".galc";
-
-                    State.SavePath = savePathStr;
+                    var savePath = GetSketchSavePath();
+                    State.SavePath = savePath;
                 }
             }
 
+            State.ShouldRun = true;
             Close();
         }
 
         private void CancelButton_Click(object sender, EventArgs e) {
-            Application.Exit();
+            Close();
         }
 
         private void ScratchCheck_CheckedChanged(object sender, EventArgs e) {

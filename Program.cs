@@ -16,11 +16,23 @@ namespace Galc {
 
             Application.Run(new ProjectSelectForm());
 
+            if (!State.ShouldRun) {
+                return;
+            }
+
             if (State.MainForm == null) {
                 State.MainForm = new MainOutputForm();
 
-                if (State.SavePath != null && File.Exists(State.SavePath)) {
-                    State.MainForm.LoadFrom(State.SavePath);
+                if (State.SavePath != null) {
+                    var projectDir = Path.GetDirectoryName(State.SavePath);
+                    if (!Directory.Exists(projectDir)) {
+                        Directory.CreateDirectory(projectDir);
+                    }
+                    if (File.Exists(State.SavePath)) {
+                        State.MainForm.LoadFrom(State.SavePath);
+                    } else {
+                        State.MainForm.SaveTo(State.SavePath);
+                    }
                 }
             }
 
